@@ -4,31 +4,21 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Customer;
-use Illuminate\Http\Request;
+//use Illuminate\Support\Facades\Request;
+ use Illuminate\Http\Request;
+
+
+
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $customer = Customer::all();
-        return Inertia::render('Customer/Index', [
-            'customer' => Customer::paginate(5)
-        ]);
-    }
+    
+    
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function create()
     {
-        //
+        return Inertia::render('Customer/Create');
     }
 
     /**
@@ -39,7 +29,19 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        // validation
+        $validated = Request::validate([
+            'nama' => 'required',
+            'email' => ['required'],
+        ]);
+
+        //create user
+        Customer::create($validated);
+
+        //redirect
+
+        return redirect('/customer');
     }
 
     /**
@@ -59,9 +61,11 @@ class CustomerController extends Controller
      * @param  \App\Models\Customer  $customer
      * @return \Illuminate\Http\Response
      */
-    public function edit(Customer $customer)
+    public function edit($id)
     {
-        //
+        $customer = Customer::find($id);
+
+        return Inertia::render('Customer/Edit', compact('customer'));
     }
 
     /**
@@ -71,9 +75,20 @@ class CustomerController extends Controller
      * @param  \App\Models\Customer  $customer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Customer $customer)
+    public function update(Request $request, $id)
     {
-        //
+
+        $this->validate($request, [
+            'nama' => ['required'],
+            'email' => ['required', 'email']
+        ]);
+        $customer = Customer::find($id);
+        $customer->nama = $request->nama;
+        $customer->email = $request->email;
+        $customer->save();
+        
+
+        return redirect()->route('customer.index');
     }
 
     /**
@@ -82,8 +97,10 @@ class CustomerController extends Controller
      * @param  \App\Models\Customer  $customer
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Customer $customer)
+    public function destroy($id)
     {
-        //
+        $customer = Customer::find($id);
+        $customer->delete();
+        return redirect()->route('customer.index');
     }
 }
