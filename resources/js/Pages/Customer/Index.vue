@@ -38,11 +38,19 @@ watch(
                 Customer
             </h2>
         </template>
+        <!-- Alert Message -->
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
+                        <!-- alert -->
+                        <div
+                            v-if="$page.props.flash.message"
+                            class="bg-blue-600 text-white mb-4 rounded-lg px-3 py-2 shadow-xl"
+                        >
+                            {{ $page.props.flash.message }}
+                        </div>
                         <input
                             v-model="search"
                             type="text"

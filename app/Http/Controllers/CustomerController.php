@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Customer;
-//use Illuminate\Support\Facades\Request;
  use Illuminate\Http\Request;
 
 
@@ -21,27 +20,24 @@ class CustomerController extends Controller
         return Inertia::render('Customer/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(Request $request)
     {
-
-        // validation
-        $validated = Request::validate([
-            'nama' => 'required',
-            'email' => ['required'],
+        $this->validate($request, [
+            'nama' => ['required'],
+            'email' => ['required', 'email']
         ]);
 
-        //create user
-        Customer::create($validated);
+        Customer::create([
+
+            'nama' => $request->nama,
+            'email' => $request->email
+
+        ]);
 
         //redirect
-
-        return redirect('/customer');
+        //return redirect()->route('customer.index');
+         return redirect()->route('customer.index')->with('message', 'Data created succesfully');
     }
 
     /**
@@ -87,8 +83,9 @@ class CustomerController extends Controller
         $customer->email = $request->email;
         $customer->save();
         
+        return redirect()->route('customer.index')->with('message', 'Data Updated succesfully');
 
-        return redirect()->route('customer.index');
+        // return redirect()->route('customer.index');
     }
 
     /**
@@ -101,6 +98,7 @@ class CustomerController extends Controller
     {
         $customer = Customer::find($id);
         $customer->delete();
-        return redirect()->route('customer.index');
+        return redirect()->route('customer.index')->with('message', 'Data Deleted succesfully');
+
     }
 }
